@@ -16,6 +16,20 @@ using namespace m1;
 Lab1::Lab1()
 {
     // TODO(student): Never forget to initialize class variables!
+    background[0] = 0.0f;
+    background[1] = 0.0f;
+    background[2] = 0.0f;
+    background[3] = 1.0f;
+
+    objects[0] = "box";
+    objects[1] = "teapot";
+    objects[2] = "sphere";
+
+    index = 0;
+
+    coords_obj[0] = 1;
+    coords_obj[1] = 0.5f;
+    coords_obj[2] = 0;
 
 }
 
@@ -35,9 +49,25 @@ void Lab1::Init()
         meshes[mesh->GetMeshID()] = mesh;
     }
 
+    {
+        Mesh* mesh = new Mesh("teapot");
+        mesh->LoadMesh(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives"), "teapot.obj");
+        meshes[mesh->GetMeshID()] = mesh;
+    }
+
+    {
+        Mesh* mesh = new Mesh("sphere");
+        mesh->LoadMesh(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives"), "sphere.obj");
+        meshes[mesh->GetMeshID()] = mesh;
+    }
+
     // TODO(student): Load some more meshes. The value of RESOURCE_PATH::MODELS
     // is actually a path on disk, go there and you will find more meshes.
-
+    {
+        Mesh* mesh = new Mesh("bunny");
+        mesh->LoadMesh(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "animals"), "bunny.obj");
+        meshes[mesh->GetMeshID()] = mesh;
+    }
 }
 
 
@@ -55,7 +85,12 @@ void Lab1::Update(float deltaTimeSeconds)
     // TODO(student): Generalize the arguments of `glClearColor`.
     // You can, for example, declare three variables in the class header,
     // that will store the color components (red, green, blue).
-    glClearColor(0, 0, 0, 1);
+    float red = background[0];
+    float green = background[1];
+    float blue = background[2];
+    float opacity = background[3];
+
+    glClearColor(red, green, blue, opacity);
 
     // Clears the color buffer (using the previously set color) and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -64,15 +99,21 @@ void Lab1::Update(float deltaTimeSeconds)
     glViewport(0, 0, resolution.x, resolution.y);
 
     // Render the object
-    RenderMesh(meshes["box"], glm::vec3(1, 0.5f, 0), glm::vec3(0.5f));
+    float x = coords_obj[0];
+    float y = coords_obj[1];
+    float z = coords_obj[2];
+    RenderMesh(meshes["box"], glm::vec3(x, y, z), glm::vec3(0.5f));
 
     // Render the object again but with different properties
-    RenderMesh(meshes["box"], glm::vec3(-1, 0.5f, 0));
+    RenderMesh(meshes[objects[index % 3]], glm::vec3(-1, 0.5f, 0));
 
     // TODO(student): We need to render (a.k.a. draw) the mesh that
     // was previously loaded. We do this using `RenderMesh`. Check the
     // signature of this function to see the meaning of its parameters.
     // You can draw the same mesh any number of times.
+    RenderMesh(meshes["bunny"], glm::vec3(0, 0.5f, 1), glm::vec3(0.05f));
+
+
 
 }
 
@@ -97,6 +138,32 @@ void Lab1::OnInputUpdate(float deltaTime, int mods)
     // a mesh instance on all three axes. You will also need to
     // generalize the position used by `RenderMesh`.
 
+    float speed = 0.2f;
+
+    if (window->KeyHold(GLFW_KEY_J)) {
+        coords_obj[0] -= speed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_L)) {
+        coords_obj[0] += speed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_U)) {
+        coords_obj[1] -= speed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_O)) {
+        coords_obj[1] += speed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_I)) {
+        coords_obj[2] -= speed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_K)) {
+        coords_obj[2] += speed * deltaTime;
+    }
+
 }
 
 
@@ -105,7 +172,13 @@ void Lab1::OnKeyPress(int key, int mods)
     // Add key press event
     if (key == GLFW_KEY_F) {
         // TODO(student): Change the values of the color components.
+        background[0] = 1.0f;
+        background[1] = 0.55f;
+        background[2] = 0.15f;
+    }
 
+    if (key == GLFW_KEY_R) {
+        index++;
     }
 
     // TODO(student): Add a key press event that will let you cycle
