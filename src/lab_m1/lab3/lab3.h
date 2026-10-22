@@ -28,11 +28,16 @@ namespace m1
         void OnWindowResize(int width, int height) override;
 
      protected:
-        float cx, cy;
-        glm::mat3 modelMatrix;
-        float translateX, translateY;
-        float scaleX, scaleY;
-        float angularStep;
+         glm::mat3 modelMatrix;
+         float cx, cy;
+         float translateX, translateY;
+         float scaleX, scaleY;
+         float angularStep;
+
+         int translateDirection;
+         int scaleDirection;
+         float squareSide;
+         float cx_square2, cy_square2;
 
         // TODO(student): If you need any other class variables, define them here.
 

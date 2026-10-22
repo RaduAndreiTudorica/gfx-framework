@@ -37,7 +37,7 @@ void Lab3::Init()
     GetCameraInput()->SetActive(false);
 
     glm::vec3 corner = glm::vec3(0, 0, 0);
-    float squareSide = 100;
+    squareSide = 100;
 
     // TODO(student): Compute coordinates of a square's center, and store
     // then in the `cx` and `cy` class variables (see the header). Use
@@ -45,8 +45,10 @@ void Lab3::Init()
     // in the `Update()` function. Think about it, why do you need them?
 
     // Initialize tx and ty (the translation steps)
-    translateX = 0;
-    translateY = 0;
+    translateX = 150.0f;
+    translateY = 250.0f;
+    translateDirection = 1;
+    scaleDirection = 1;
 
     // Initialize sx and sy (the scale factors)
     scaleX = 1;
@@ -85,16 +87,27 @@ void Lab3::Update(float deltaTimeSeconds)
     // class header, and if you need more of them to complete the task,
     // add them over there!
 
+
+    translateX += deltaTimeSeconds * 100.0f* translateDirection;
+    if (translateX > 400.0f || translateX < 100.0f) {
+        translateDirection *= -1;
+    }
     modelMatrix = glm::mat3(1);
-    modelMatrix *= transform2D::Translate(150, 250);
+    modelMatrix *= transform2D::Translate(translateX, translateY);
     // TODO(student): Create animations by multiplying the current
     // transform matrix with the matrices you just implemented.
     // Remember, the last matrix in the chain will take effect first!
 
     RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
 
+    angularStep += deltaTimeSeconds * 2.0f;
     modelMatrix = glm::mat3(1);
-    modelMatrix *= transform2D::Translate(400, 250);
+    float cx = squareSide / 2.0f;
+    float cy = squareSide / 2.0f;
+
+    modelMatrix *= transform2D::Translate(cx_square2 + cx, cy_square2 + cy);
+    modelMatrix *= transform2D::Rotate(angularStep);
+    modelMatrix *= transform2D::Translate(-cx, -cy);
     // TODO(student): Create animations by multiplying the current
     // transform matrix with the matrices you just implemented
     // Remember, the last matrix in the chain will take effect first!
@@ -106,6 +119,23 @@ void Lab3::Update(float deltaTimeSeconds)
     // TODO(student): Create animations by multiplying the current
     // transform matrix with the matrices you just implemented
     // Remember, the last matrix in the chain will take effect first!
+
+    scaleX += deltaTimeSeconds * 0.5f * scaleDirection;
+    scaleY += deltaTimeSeconds * 0.5f * scaleDirection;
+
+    if (scaleX > 2.0f) {
+        scaleDirection = -1;
+    } else if (scaleX < 0.5f) {
+        scaleDirection = 1;
+    }
+
+    float square3_posX = 650.0f;
+    float square3_posY = 250.0f;
+
+    modelMatrix = glm::mat3(1);
+    modelMatrix *= transform2D::Translate(square3_posX + cx, square3_posY + cy);
+    modelMatrix *= transform2D::Scale(scaleX, scaleY);
+    modelMatrix *= transform2D::Translate(-cx, -cy);
 
     RenderMesh2D(meshes["square3"], shaders["VertexColor"], modelMatrix);
 }
