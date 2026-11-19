@@ -86,7 +86,6 @@ void Lab4::Update(float deltaTimeSeconds)
     glPointSize(5);
     glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 
-    // Sets the screen area where to draw
     glm::ivec2 resolution = window->GetResolution();
     glViewport(0, 0, resolution.x, resolution.y);
 
@@ -96,7 +95,7 @@ void Lab4::Update(float deltaTimeSeconds)
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(miniViewportArea.x, miniViewportArea.y, miniViewportArea.width, miniViewportArea.height);
 
-    // TODO(student): render the scene again, in the new viewport
+    RenderScene();
     DrawCoordinateSystem();
 }
 
@@ -113,14 +112,72 @@ void Lab4::FrameEnd()
 
 void Lab4::OnInputUpdate(float deltaTime, int mods)
 {
-    // TODO(student): Add transformation logic
+    float translateSpeed = 2.5f;
+    float scaleSpeed = 1.5f;
+    float rotateSpeed = 2.0f;
 
+    if (window->KeyHold(GLFW_KEY_W)) {
+        translateZ -= translateSpeed * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_S)) {
+        translateZ += translateSpeed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_A)) {
+        translateX -= translateSpeed * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_D)) {
+        translateX += translateSpeed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_R)) {
+        translateY += translateSpeed * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_F)) {
+        translateY -= translateSpeed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_1)) {
+        scaleX += scaleSpeed * deltaTime;
+        scaleY += scaleSpeed * deltaTime;
+        scaleZ += scaleSpeed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_2)) {
+        scaleX -= scaleSpeed * deltaTime;
+        scaleY -= scaleSpeed * deltaTime;
+        scaleZ -= scaleSpeed * deltaTime;
+
+        if (scaleX < 0.1f) {
+            scaleX = scaleY = scaleZ = 0.1f;
+        }
+    }
+
+    if (window->KeyHold(GLFW_KEY_3)) {
+        angularStepOX += rotateSpeed * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_4)) {
+        angularStepOX -= rotateSpeed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_5)) {
+        angularStepOY += rotateSpeed * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_6)) {
+        angularStepOY -= rotateSpeed * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_7)) {
+        angularStepOZ += rotateSpeed * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_8)) {
+        angularStepOZ -= rotateSpeed * deltaTime;
+    }
 }
 
 
 void Lab4::OnKeyPress(int key, int mods)
 {
-    // Add key press event
     if (key == GLFW_KEY_SPACE)
     {
         switch (polygonMode)
@@ -136,11 +193,38 @@ void Lab4::OnKeyPress(int key, int mods)
             break;
         }
     }
-    
-    // TODO(student): Add viewport movement and scaling logic
+
+    int moveStep = 25;
+    int scaleStep = 25;
+
+    if (key == GLFW_KEY_I) {
+        miniViewportArea.y += moveStep;
+    }
+
+    if (key == GLFW_KEY_K) {
+        miniViewportArea.y -= moveStep;
+    }
+
+    if (key == GLFW_KEY_J) {
+        miniViewportArea.x -= moveStep;
+    }
+
+    if (key == GLFW_KEY_L) {
+        miniViewportArea.x += moveStep;
+    }
+
+    if (key == GLFW_KEY_U) {
+        if (miniViewportArea.width - scaleStep > 20 && miniViewportArea.height - scaleStep > 20) {
+            miniViewportArea.width -= scaleStep;
+            miniViewportArea.height -= scaleStep;
+        }
+    }
+
+    if (key == GLFW_KEY_O) {
+        miniViewportArea.width += scaleStep;
+        miniViewportArea.height += scaleStep;
+    }
 }
-
-
 void Lab4::OnKeyRelease(int key, int mods)
 {
     // Add key release event
